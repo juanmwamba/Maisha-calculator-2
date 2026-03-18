@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Power Calculator — Maisha Renewables Limited</title>
+  <meta name="description" content="Calculate your daily home power usage and find the right solar solution for your Zambian home. Free tool by Maisha Renewables Limited.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal: #1e3d3a;
+      --teal-mid: #2d5a54;
+      --green: #4a7c4e;
+      --green-light: #7ab648;
+      --leaf: #eaf3de;
+      --leaf-mid: #c8e6a0;
+      --white: #ffffff;
+      --off: #f7f9f5;
+      --text: #1a2e1a;
+      --muted: #5a7060;
+      --border: #d4e4d0;
+      --shadow: rgba(30,61,58,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--off);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      background: var(--teal);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .nav-logo-circle {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .nav-name { color: white; }
+    .nav-name strong { display: block; font-size: 14px; font-weight: 500; letter-spacing: 0.1em; }
+    .nav-name span { font-size: 10px; opacity: 0.6; letter-spacing: 0.12em; }
+    .nav-cta {
+      background: var(--green-light); color: var(--teal);
+      border: none; padding: 8px 18px; border-radius: 6px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+      cursor: pointer; text-decoration: none;
+    }
+    .nav-cta:hover { background: #8fc954; }
+
+    /* HERO */
+    .hero {
+      background: var(--teal);
+      padding: 4rem 2rem 5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 120%, rgba(74,124,78,0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(122,182,72,0.2);
+      color: var(--green-light);
+      font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+      padding: 5px 14px; border-radius: 20px;
+      border: 1px solid rgba(122,182,72,0.3);
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+    .hero h1 em { color: var(--green-light); font-style: normal; }
+    .hero p {
+      color: rgba(255,255,255,0.65);
+      font-size: 16px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* WAVE */
+    .wave { display: block; margin-top: -2px; }
+
+    /* MAIN */
+    main { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    /* STEP */
+    .step-label {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.14em;
+      color: var(--muted); text-transform: uppercase; margin-bottom: 8px;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 12px var(--shadow);
+    }
+
+    /* APPLIANCES */
+    .col-header {
+      display: grid; grid-template-columns: 1fr 90px 90px 36px;
+      gap: 8px; font-size: 11px; color: var(--muted);
+      margin-bottom: 8px; padding: 0 2px;
+    }
+    .col-header span:nth-child(2), .col-header span:nth-child(3) { text-align: center; }
+
+    .appliance-row {
+      display: grid; grid-template-columns: 1fr 90px 90px 36px;
+      gap: 8px; align-items: center; margin-bottom: 8px;
+    }
+    .appliance-row input[type="text"],
+    .appliance-row input[type="number"] {
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--off);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      width: 100%;
+    }
+    .appliance-row input[type="number"] { text-align: center; }
+    .appliance-row input:focus { outline: none; border-color: var(--green); background: white; }
+
+    .remove-btn {
+      background: none; border: none; cursor: pointer;
+      color: #bbb; font-size: 16px; width: 30px; height: 30px;
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    }
+    .remove-btn:hover { background: #fee2e2; color: #dc2626; }
+
+    .add-btn {
+      background: none; border: 1px dashed var(--border);
+      color: var(--muted); font-family: 'DM Sans', sans-serif;
+      font-size: 13px; padding: 7px 14px; border-radius: 8px;
+      cursor: pointer; margin-top: 4px; transition: all 0.15s;
+    }
+    .add-btn:hover { border-color: var(--green); color: var(--green); background: var(--leaf); }
+
+    /* METRICS */
+    .metrics {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 12px; margin-bottom: 1.5rem;
+    }
+    .metric {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1rem 0.75rem; text-align: center;
+      box-shadow: 0 1px 6px var(--shadow);
+    }
+    .metric-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .metric-value { font-size: 24px; font-weight: 500; color: var(--teal); font-family: 'DM Serif Display', serif; }
+    .metric-unit { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+    /* RECOMMENDATION */
+    .result-card { display: none; }
+
+    .rec-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+    .rec-title { font-size: 15px; font-weight: 500; color: var(--teal); }
+    .badge {
+      font-size: 11px; font-weight: 500; padding: 3px 10px;
+      border-radius: 20px; white-space: nowrap;
+    }
+    .badge-basic { background: #dbeafe; color: #1d4ed8; }
+    .badge-mid { background: #fef3c7; color: #92400e; }
+    .badge-premium { background: #fee2e2; color: #991b1b; }
+    .badge-commercial { background: #f3e8ff; color: #6b21a8; }
+
+    .rec-box {
+      background: var(--leaf);
+      border-left: 3px solid var(--green);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px; margin-bottom: 10px;
+      font-size: 14px; color: var(--teal); line-height: 1.6;
+    }
+    .rec-detail { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+    /* FORM */
+    .form-title { font-size: 15px; font-weight: 500; color: var(--teal); margin-bottom: 4px; }
+    .form-sub { font-size: 13px; color: var(--muted); margin-bottom: 1rem; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    @media (max-width: 480px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .form-field { display: flex; flex-direction: column; gap: 5px; }
+    .form-field label { font-size: 12px; color: var(--muted); font-weight: 500; }
+    .form-field input, .form-field select {
+      padding: 10px 12px;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--off); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
+    }
+    .form-field input:focus, .form-field select:focus { outline: none; border-color: var(--green); background: white; }
+
+    .cta-btn {
+      width: 100%; padding: 14px;
+      background: var(--teal); color: white;
+      border: none; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+      cursor: pointer; margin-top: 8px; transition: background 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .cta-btn:hover { background: var(--teal-mid); }
+    .cta-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .error-msg {
+      background: #fee2e2; color: #991b1b;
+      font-size: 13px; padding: 8px 12px;
+      border-radius: 8px; margin-top: 8px; display: none;
+    }
+
+    /* SUCCESS */
+    .success-msg { display: none; text-align: center; padding: 2.5rem 1rem; }
+    .success-circle {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--leaf); border: 2px solid var(--leaf-mid);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+    .success-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--teal); margin-bottom: 8px; }
+    .success-sub { font-size: 14px; color: var(--muted); margin-bottom: 1.5rem; }
+    .reset-btn {
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); font-family: 'DM Sans', sans-serif;
+      font-size: 13px; padding: 8px 20px; border-radius: 8px; cursor: pointer;
+    }
+    .reset-btn:hover { border-color: var(--green); color: var(--green); }
+
+    /* WHY SOLAR */
+    .why-section {
+      background: var(--teal);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .why-section h2 {
+      font-family: 'DM Serif Display', serif;
+      color: white; font-size: 1.75rem; font-weight: 400;
+      margin-bottom: 0.5rem;
+    }
+    .why-section p { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 2rem; }
+    .why-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px; max-width: 680px; margin: 0 auto;
+    }
+    .why-card {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 1.25rem;
+      text-align: left;
+    }
+    .why-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: rgba(122,182,72,0.2);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 10px;
+    }
+    .why-card h3 { color: white; font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .why-card p { color: rgba(255,255,255,0.5); font-size: 12px; line-height: 1.5; }
+
+    /* FOOTER */
+    footer {
+      background: #111e11;
+      padding: 2rem;
+      text-align: center;
+    }
+    footer .foot-brand { color: white; font-size: 14px; font-weight: 500; letter-spacing: 0.06em; margin-bottom: 4px; }
+    footer .foot-sub { font-size: 12px; color: rgba(255,255,255,0.35); }
+
+    /* STATUS DOT */
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green-light); display: inline-block;
+      margin-right: 5px; animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+
+    @media (max-width: 600px) {
+      .metrics { grid-template-columns: repeat(3, 1fr); }
+      .metric-value { font-size: 18px; }
+      .col-header, .appliance-row { grid-template-columns: 1fr 72px 72px 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-brand" href="#">
+      <div class="nav-logo-circle">
+        <svg width="22" height="14" viewBox="0 0 22 14" fill="none">
+          <path d="M2 7 C2 3 7 1 11 4 C15 7 18 7 20 5.5" stroke="#4a7c4e" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <path d="M20 7 C20 11 15 13 11 10 C7 7 4 7 2 8.5" stroke="#7ab648" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <circle cx="20" cy="6.5" r="2" fill="#4a7c4e"/>
+        </svg>
+      </div>
+      <div class="nav-name">
+        <strong>MAISHA</strong>
+        <span>RENEWABLES LIMITED</span>
+      </div>
+    </a>
+    <a class="nav-cta" href="#calculator">Calculate now</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">Free tool for Zambian homeowners</div>
+    <h1>Know your power.<br><em>Own your energy.</em></h1>
+    <p>Calculate your daily electricity usage and discover the right solar system for your home — in under 2 minutes.</p>
+  </div>
+
+  <svg class="wave" viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block; background:#f7f9f5;">
+    <path d="M0 0 C360 40 1080 40 1440 0 L1440 0 L0 0 Z" fill="#1e3d3a"/>
+  </svg>
+
+  <!-- MAIN CALCULATOR -->
+  <main id="calculator">
+
+    <div class="step-label" style="margin-top:0.5rem;">Step 1 — Add your home appliances</div>
+    <div class="card">
+      <div class="col-header">
+        <span>Appliance</span>
+        <span style="text-align:center">Watts</span>
+        <span style="text-align:center">Hours/day</span>
+        <span></span>
+      </div>
+      <div id="appliance-list"></div>
+      <button class="add-btn" onclick="addAppliance()">+ Add appliance</button>
+    </div>
+
+    <div class="step-label">Step 2 — Your usage summary</div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Daily usage</div>
+        <div class="metric-value" id="m-kwh">0.0</div>
+        <div class="metric-unit">kWh/day</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Monthly est.</div>
+        <div class="metric-value" id="m-monthly">0.0</div>
+        <div class="metric-unit">kWh/month</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Est. bill</div>
+        <div class="metric-value" id="m-bill">K0</div>
+        <div class="metric-unit">ZMW/month</div>
+      </div>
+    </div>
+
+    <div class="step-label">Step 3 — Your solar recommendation</div>
+    <div class="card result-card" id="result-card">
+      <div class="rec-header">
+        <span class="rec-title">Recommended system</span>
+        <span class="badge" id="rec-tier">—</span>
+      </div>
+      <div class="rec-box" id="rec-text"></div>
+      <div class="rec-detail" id="rec-detail"></div>
+
+      <div class="divider"></div>
+
+      <div class="form-title">Get your free Maisha quote</div>
+      <div class="form-sub">Our team will design the perfect system for your home — no obligation.</div>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Full name *</label>
+          <input type="text" id="f-name" placeholder="e.g. Mwansa Banda">
+        </div>
+        <div class="form-field">
+          <label>Phone number *</label>
+          <input type="text" id="f-phone" placeholder="e.g. 0977 000 000">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Email address</label>
+          <input type="email" id="f-email" placeholder="e.g. you@email.com">
+        </div>
+        <div class="form-field">
+          <label>Area / town</label>
+          <select id="f-area">
+            <option value="">Select area...</option>
+            <option>Lusaka</option><option>Kitwe</option><option>Ndola</option>
+            <option>Livingstone</option><option>Kabwe</option><option>Chingola</option>
+            <option>Mufulira</option><option>Chipata</option><option>Solwezi</option>
+            <option>Kasama</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="cta-btn" id="submit-btn" onclick="submitLead()">
+        Get my free Maisha quote →
+      </button>
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <div class="success-msg" id="success-msg">
+      <div class="success-circle">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <path d="M5 13l6 6 10-10" stroke="#4a7c4e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="success-title">We've got your details!</div>
+      <div class="success-sub">The Maisha team will be in touch with a personalised quote for your <strong id="s-kwh"></strong> kWh/day usage. Check your phone and email.</div>
+      <button class="reset-btn" onclick="resetCalculator()">Calculate again</button>
+    </div>
+
+  </main>
+
+  <!-- WHY SOLAR -->
+  <div class="why-section">
+    <h2>Why go solar in Zambia?</h2>
+    <p>With load shedding and rising ZESCO tariffs, solar pays for itself faster than ever.</p>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="4" stroke="#7ab648" stroke-width="1.5"/><line x1="9" y1="1" x2="9" y2="3" stroke="#7ab648" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="15" x2="9" y2="17" stroke="#7ab648" stroke-width="1.5" stroke-linecap="round"/><line x1="1" y1="9" x2="3" y2="9" stroke="#7ab648" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="9" x2="17" y2="9" stroke="#7ab648" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>300+ sunny days/year</h3>
+        <p>Zambia has exceptional solar irradiance — ideal conditions for maximum output.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v8l4 2" stroke="#7ab648" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="9" r="7" stroke="#7ab648" stroke-width="1.5"/></svg>
+        </div>
+        <h3>Load shedding proof</h3>
+        <p>Battery backup keeps your home powered through ZESCO outages, day and night.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M9 3v12" stroke="#7ab648" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Save on bills</h3>
+        <p>Reduce or eliminate your monthly ZESCO bill and protect against future tariff increases.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 14 C4 8 9 4 14 6" stroke="#7ab648" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M14 6 C10 6 7 9 8 14" stroke="#7ab648" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        </div>
+        <h3>Clean energy</h3>
+        <p>Reduce your carbon footprint and contribute to a cleaner, greener Zambia.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-brand">MAISHA RENEWABLES LIMITED</div>
+    <div class="foot-sub">Lusaka, Zambia &nbsp;·&nbsp; Powering Zambian homes &nbsp;·&nbsp; <span class="status-dot"></span>Leads connected to Google Sheets</div>
+  </footer>
+
+  <script>
+    const SHEET_URL = "https://script.google.com/macros/s/AKfycbwo6Y0GAtk7bKeRjNn0HpH0FuJhVvavgXdv2B6I4VxMznax86xz-p72b7A25RzHyRs4/exec";
+    const TARIFF = 0.98;
+
+    const DEFAULTS = [
+      { name: "Refrigerator", watts: 150, hours: 24 },
+      { name: "LED lights (x5)", watts: 50, hours: 6 },
+      { name: "TV", watts: 100, hours: 5 },
+      { name: "Electric kettle", watts: 1500, hours: 0.5 },
+      { name: "Phone chargers (x3)", watts: 45, hours: 4 },
+    ];
+
+    let appliances = DEFAULTS.map(a => ({ ...a }));
+
+    function renderAppliances() {
+      const list = document.getElementById('appliance-list');
+      list.innerHTML = '';
+      appliances.forEach((a, i) => {
+        const row = document.createElement('div');
+        row.className = 'appliance-row';
+        row.innerHTML = `
+          <input type="text" value="${a.name}" oninput="appliances[${i}].name=this.value" placeholder="Appliance name">
+          <input type="number" min="0" value="${a.watts}" oninput="appliances[${i}].watts=parseFloat(this.value)||0;recalc()">
+          <input type="number" min="0" max="24" step="0.5" value="${a.hours}" oninput="appliances[${i}].hours=parseFloat(this.value)||0;recalc()">
+          <button class="remove-btn" onclick="removeAppliance(${i})" title="Remove">&#x2715;</button>
+        `;
+        list.appendChild(row);
+      });
+      recalc();
+    }
+
+    function addAppliance() { appliances.push({ name: '', watts: 0, hours: 0 }); renderAppliances(); }
+    function removeAppliance(i) { appliances.splice(i, 1); renderAppliances(); }
+
+    function recalc() {
+      const kwh = appliances.reduce((s, a) => s + (a.watts * a.hours) / 1000, 0);
+      document.getElementById('m-kwh').textContent = kwh.toFixed(2);
+      document.getElementById('m-monthly').textContent = (kwh * 30).toFixed(1);
+      document.getElementById('m-bill').textContent = 'K' + Math.round(kwh * 30 * TARIFF);
+      updateRec(kwh);
+    }
+
+    function updateRec(kwh) {
+      const rc = document.getElementById('result-card');
+      if (kwh < 0.5) { rc.style.display = 'none'; return; }
+      rc.style.display = 'block';
+      document.getElementById('success-msg').style.display = 'none';
+      document.getElementById('submit-btn').style.display = 'block';
+
+      let tier, cls, text, detail;
+      if (kwh < 3) {
+        tier = 'Basic (1–2 kWp)'; cls = 'badge-basic';
+        text = 'A small 1–2 kWp solar system with a 50–100Ah battery would comfortably cover your daily needs.';
+        detail = 'Best for: lights, phone charging, TV, and small appliances. Keeps you powered through load shedding.';
+      } else if (kwh < 8) {
+        tier = 'Mid-range (3–5 kWp)'; cls = 'badge-mid';
+        text = 'A 3–5 kWp system with a 200Ah battery bank is a great fit for your household.';
+        detail = 'Best for: fridge, TV, lighting, kettle & more. Full daytime independence with backup for evenings.';
+      } else if (kwh < 15) {
+        tier = 'Premium (6–10 kWp)'; cls = 'badge-premium';
+        text = 'Your usage is high — a 6–10 kWp system with a 400Ah+ lithium battery will give you full energy independence.';
+        detail = 'Best for: heavy loads including geysers, air conditioning, or home offices. Grid-independent living.';
+      } else {
+        tier = 'Commercial (10 kWp+)'; cls = 'badge-commercial';
+        text = 'Your usage is above average for a home — a commercial-grade 10 kWp+ system is recommended.';
+        detail = 'Our team will assess your site and design a fully custom solution for your property.';
+      }
+      document.getElementById('rec-tier').textContent = tier;
+      document.getElementById('rec-tier').className = 'badge ' + cls;
+      document.getElementById('rec-text').textContent = text;
+      document.getElementById('rec-detail').textContent = detail;
+    }
+
+    async function submitLead() {
+      const name = document.getElementById('f-name').value.trim();
+      const phone = document.getElementById('f-phone').value.trim();
+      const email = document.getElementById('f-email').value.trim();
+      const area = document.getElementById('f-area').value;
+      const err = document.getElementById('error-msg');
+      err.style.display = 'none';
+
+      if (!name || !phone) {
+        err.textContent = 'Please enter your name and phone number to continue.';
+        err.style.display = 'block'; return;
+      }
+
+      const kwh = parseFloat(document.getElementById('m-kwh').textContent);
+      const tier = document.getElementById('rec-tier').textContent;
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true; btn.textContent = 'Submitting...';
+
+      try {
+        await fetch(SHEET_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, email, area, kwh: kwh.toFixed(2), tier })
+        });
+      } catch(e) { console.warn(e); }
+
+      document.getElementById('result-card').style.display = 'none';
+      document.getElementById('s-kwh').textContent = kwh.toFixed(2);
+      document.getElementById('success-msg').style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Get my free Maisha quote →';
+    }
+
+    function resetCalculator() {
+      appliances = DEFAULTS.map(a => ({ ...a }));
+      ['f-name','f-phone','f-email'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('f-area').value = '';
+      document.getElementById('success-msg').style.display = 'none';
+      renderAppliances();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    renderAppliances();
+  </script>
+</body>
+</html>
